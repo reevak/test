@@ -1,26 +1,37 @@
 <?php
 header('Content-Type: text/html; charset=UTF-8');
+echo '<pre>';
 
-$rss = simplexml_load_file('http://expansion.feedsportal.com/rss/empresastmt.xml');
-$feed1 = json_encode($rss);
-$feed2 = json_decode($feed1);
-$output = [];
+//LIST OF RSS FEEDS
+$news= ['Expansion' => [['TMT','http://expansion.feedsportal.com/rss/empresastmt.xml'],
+                        ['Digitech', 'http://expansion.feedsportal.com/rss/empresasdigitech.xml'],
+                        ['Economia','http://expansion.feedsportal.com/rss/economia.xml']],
+        'Invertia' => [['Portada','http://www.invertia.com/rss/rss-portada-invertia.asp'],
+                        ['Noticias', 'http://www.invertia.com/rss/rss-portada-noticias-invertia.asp']]];
 
-foreach ($feed2->channel->item as $key=>$value) {
-  //Make an array with title and links
-  $output[$key]= [$feed2->channel->item[$key]->title,$feed2->channel->item[$key]->link];
+//ARRAY THAT WILL CONTAIN ONLY TITLES AND LINKS OF EACH RSS
+
+
+//THE FUNCTION CAN RUN FOR BOTH NEWSPAPERS
+function convert_xml ($feed) {
+  //TURN XML INTO PHP OBJECT AND ARRAYS
+  $rss = json_decode(json_encode(simplexml_load_file($feed)));
+
+  foreach ($rss->channel->item as $key=>$value) {
+    //MAKE CUSTOM ARRAY READY FOR DATABASE TAKING LINKS AND TITLES ONLY
+    $output[$key]= [$rss->channel->item[$key]->title,$rss->channel->item[$key]->link];
+  }
+  return $output;
 }
 
-  //var_dump($feed2['channel']['item'][$key]);
+//ITERATE THROUGH THE NEWSPAPERS
+foreach ($news as $key => $value) {
+  //ITERATE THROUGH THE RSS
+  foreach ($news[$key] as $val) {
+    $clean_rss[$key] = convert_xml($val[1]);
+  }
+}
 
-
-//echo $feed2->channel->item[1]->link;
-echo '----<pre>';
-//var_dump($feed2->channel->item[0]->link);
-var_dump($output);
-//INTERESANTE PARA VER ESTRUCTURA ENTERA
-//var_dump($feed2);
-//print_r($feed2->channel->item[0]->link);
+var_dump($clean_rss);
 echo '</pre>';
-
 ?>
