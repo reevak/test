@@ -19,7 +19,7 @@ function convert_xml ($feed) {
 
   foreach ($rss->channel->item as $key=>$value) {
     //MAKE CUSTOM ARRAY READY FOR DATABASE TAKING LINKS AND TITLES ONLY
-    $output[$key]= [$rss->channel->item[$key]->title,$rss->channel->item[$key]->link];
+    $output[$key]= [$rss->channel->item[$key]->title,$rss->channel->item[$key]->link,$rss->channel->pubDate];
   }
   return $output;
 }
